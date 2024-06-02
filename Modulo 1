@@ -1,0 +1,642 @@
+## Objetivos:
+#- Revisar listas (`list`) em Python
+#- Testar o tempo de execução pelas quatro operações (leitura, busca, inserção e remoção) em listas
+#- Revisar conjuntos (`set`) em Python
+#- Testar o tempo de execução operação de inserção em conjuntos
+
+## Estruturas de dados em Python
+#São várias as estruturas de dados em Python que já vêm implementadas com a linguagem. 
+#As mais comuns são as strings, as listas, as tuplas, os dicionários e os conjuntos. 
+#As três primeiras são também chamadas de ordenadas ou sequências por serem indexadas 
+#(não confundir com possuirem os elementos em ordem). As duas últimas são chamadas de não 
+#ordenadas, ou seja, não são sequências, já que não são indexadas. Neste roteiro nos interessam 
+#as listas e os conjuntos.
+
+## Listas (`list`)
+#Uma lista em Python **é** uma coleção ordenada (indexada) de zero ou mais referências a 
+#objetos Python. São sequências com índice começando em zero. Além disso, elas são heterogêneas, 
+#isto é, admitem objetos de tipos diferentes, e são mutáveis, ou seja, podem ser alteradas em 
+#tempo de execução. Uma lista é definida por colchetes e seus elementos são separados por vírgula:
+
+[]                     # Lista vazia
+['A', 3, True, 6.5]    # Lista com quatro elementos de tipos diferentes
+
+# Exemplo de uma lista composta por números:
+
+l = [4, 2, 6]          # Variável l se refere à lista com valores 4, 2 e 6
+print(l)
+
+# As sequências em Python (strings, listas e tuplas) possuem diversas operações que 
+#são comuns entre elas. Para duas sequências quaisquer chamadas a_seq e b_seq, temos:
+
+# Indexação: a_seq[i] acessa um elemento da sequência na posição (índice) i
+# Concatenação: a_seq + b_seq combina sequências em uma só, gerando um nova sequência
+# Repetição: n * a_seq concatena a sequência um número n de vezes, gerando uma nova sequência
+# Pertencimento: e in a_seq verifica se um item e está na sequência
+# Comprimento: len(a_seq) obtém o número de elementos da sequência
+# Fatiamento: a_seq[i:j] extrai parte da sequência do índice i até o índice j-1, 
+#sendo que i e j podem ser omitidos e podem ser números negativos (consultar documentação)
+# Para uma lista os seguintes métodos ou operações são possíveis:
+
+# Inserção: a_list.append(item) adiciona item ao final da lista
+# Concatenção: a_list.extend(b_list) concatena b_list a a_list
+# Inserção: a_list.insert(i,item) insere item na iésima posição da lista
+# Remoção: a_list.pop() remove e devolve o último elemento da lista
+# Remoção:a_list.pop(i) remove e devolve o iésimo elemento da lista
+# Ordenação: a_list.sort() modifica uma lista para que fique ordenada
+# Ordenação: a_list.reverse() modifica uma lista para ficar na ordem reversa
+# Remoção: del a_list[i] remove o elemento na iésima posição
+# Busca: a_list.index(item) devolve o índice da primeira ocorrência de item
+# Contagem: a_list.count(item) conta o número de ocorrências de item
+# Remoção: a_list.remove(item) remove a primeira ocorrência de item
+# Python permite a criação compacta de listas por meio de abrangência de lista 
+#(list comprehension). Por exemplo, a criação de uma lista em que os elementos são o 
+#quadrado dos elementos de outra lista pode ser feita por meio de um laço de repetição:
+
+numbers = [1, 2, 3, 4, 5, 6]
+squared = []
+for n in numbers:
+  squared.append(n*n)
+print(squared)
+
+# Essa mesma lista pode ser criada com abrangência de lista assim:
+
+numbers = [1, 2, 3, 4, 5, 6]
+squared = [n*n for n in numbers]
+print(squared)
+
+# Ou ainda, usando a função `range` do Python:
+
+[n*n for n in range(1, 7)]
+
+# Em Python fazemos uso frequente de listas. Consideraremos que listas em Python 
+#nada mais são do que arrays com tamanho variável. Em outras palavras, são arrays
+#que ocupam um espaço de memória maior do que o necessário pelos elementos contidos e 
+#que modificam este espaço alocado conforme elementos são removidos ou adicionados. 
+#Não entraremos em detalhes sobre isso; quem tiver curiosidade pode consultar, por exemplo,
+#o excelente texto Python list implementation.
+
+# Embora na aula teórica tenhamos mencionado que não queremos avaliar o desempenho em tempo de
+#relógio, mas em passos, aqui vamos usar o relógio. Isso pode ser visto como uma verificação 
+#empírica da discussão teórica, mas deve-se ter em mente as limitações dessa abordagem. 
+#Testes usando o tempo de execução com propósitos bem específicos são conhecidos como 
+#benchmarks.
+
+# Para testar as quatro operações básicas geraremos listas de vários tamanhos. 
+#Também analisaremos o pior caso para cada operação. Como visto na revisão acima, 
+#as quatro operações em Python que correspondem à leitura, busca, inserção e remoção 
+#em uma lista chamada array, índice i e valor v são, respectivamente:
+
+# Leitura: array[i] (para este teste, não importa o valor de i)
+# Busca: array.index(v) (para este teste, v deve ser o último valor da lista ou não 
+#constar na lista)
+# Inserção: array.insert(i,v) (para este teste, i deve ser zero e v pode ser qualquer valor)
+# Remoção: array.pop(i) (a rigor deveria-se usar del array[i]; para este teste, i deve ser zero)
+# Portanto, não iremos implementar essas operações, mas avaliar a implementação já 
+#disponível no Python.
+
+# Não dispomos de um comando simples para testar o consumo de memória. 
+#Portanto, não faremos esse teste, embora em alguns casos possamos fazer a análise. 
+#Porém, como foi visto na parte teórica, para todas as operações em tela o espaço 
+#adicional de memória necessário é constante.
+
+### Leitura
+
+# O código a seguir faz a operação de leitura de um índice qualquer em uma lista 
+#com 10 elementos. Usamos uma lista apenas com números zero para este exemplo. 
+#%timeit é uma 'função mágica' do IPython (um interpretador interativo) que executa 
+#automaticamente várias vezes o código que segue na mesma linha e fornece estatísicas 
+#do tempo de execução.
+
+# Teste de tempo para leitura do índice 5 em um lista com 10 elementos
+l = [0 for _ in range(10)]
+%timeit l[5]
+
+# Exercício: Use as células de código a seguir (e crie outras, se necessário) para repetir 
+#o teste para listas maiores, por exemplo, com 100 e com 1000 elementos. Teste também para 
+#outros valores de índice. O que podemos concluir sobre o número de 'passos' necessários para 
+#fazer a leitura do valor de um determinado índice numa lista em Python? Está coerente com 
+#o que foi visto na aula teórica?
+
+# Digite seu código aqui!
+l = [0 for _ in range(100)]
+%timeit l[5]
+
+# Digite seu código aqui!
+l = [0 for _ in range(100)]
+print(l)
+%timeit l[5]
+
+# A fim de analisar grandes quantidades de dados de forma mais ágil e intuitiva, é comum 
+#o uso de gráficos. Na avaliação de algoritmos e estruturas de dados, eles constituem 
+#ferramentas importantes que nos permitem visualizar tendências de comportamento e 
+#realizar comparações de desempenho.
+
+# Para criar os gráficos usaremos uma biblioteca chamada matplotlib. 
+#Mais especificamente um módulo dessa biblioteca chamado pyplot que possui comandos 
+#pra geração de gráficos semelhantes aos do Matlab. No código a seguir foram incluídos 
+#comentários nas linhas que usam matplotlib e pyplot. Mas informações podem ser encontradas 
+#na documentação.
+
+# Além disso, como queremos armazenar os valores obtidos com o %timeit, temos que empregá-lo 
+#de uma maneira diferente. Para cada execução, uma estrutura chamada TimeitResult é obtida 
+#com %timeit e o valor é atribuído a uma variável com auxílio da opção -o. Em seguida o valor 
+#best é adicionado a uma lista. Esse valor corresponde à média de todos os menores valores 
+#obtidos em uma execução do %timeit. A opção -q oculta o resultado de cada execução 
+#de %timeit.
+
+# O gráfico gerado pelo código a seguir mostra o tempo computação da operação de leitura 
+#do último elemento em listas de tamanhos variados.
+
+# Importante: Como estamos utilizando uma plataforma online, outliers (valores destoantes, 
+#que se afastam significativamente da tendência geral), estão suscetíveis a aparecer nos 
+#gráficos devido a múltiplos fatores. Entre eles, estão variações de processamento, 
+#interferências de sistemas externos e anomalias na internet.
+
+import matplotlib.pyplot as plt # Importa o módulo pyplot da biblioteca matplotlib com o nome plt
+
+size = [] # Tamanho do problema
+time = [] # Tempo de execução
+
+for n in range(1, 100000, 100):           # Valores de n de 1 a 100000 em passos de 100
+  array = [0 for _ in range(n)]           # Array apenas com zeros
+  t = %timeit -o -r 1 -n 5 -q  array[0] # Leitura do último elemento
+  size.append(n)                          # Insere o valor de n no final da lista de tamanhos
+  time.append(t.best)                     # Insere o melhor tempo obtido com %timeit nesta execução no final da lista de tempos
+
+plt.figure(figsize = (5, 3))                               # Cria uma figura vazia e define o tamanho
+plt.plot(size, time, label = 'Leitura do último elemento') # Gera um gráfico de linha com os dados do eixo x (size), 
+                                                            #do eixo y (time), e um texto para a legenda
+plt.xlabel('Número de elementos da lista')                 # Cria o texto para o eixo x
+plt.ylabel('Tempo demandado (s)')                          # Cria o texto para o eixo y
+plt.legend(loc = 'upper left')                             # Cria a legenda e a posicionado no canto superior esquerdo
+
+# Exercício: Experimente gerar outros gráficos modificando o tamanho das listas, 
+#alterando o índice de leitura e/ou a quantidade de iterações. Para isso, copie o código 
+#acima e cole-o nas células de programação seguintes (se necessário, crie outras). 
+#Em cada caso, reflita sobre os resultados obtidos: a tendência observada corresponde ao 
+#que foi estudado na aula teórica sobre eficiência da leitura quanto ao tempo de execução?
+
+# Digite seu código aqui!
+import matplotlib.pyplot as plt
+
+size = [] # Tamanho do problema
+time = [] # Tempo de execução
+
+for n in range(1, 100000, 100):
+  array = [0 for _ in range(n)]        # Array apenas com zeros
+  t = %timeit -o -r 1 -n 1 -q array[0] # Leitura do primeiro elemento
+  size.append(n)
+  time.append(t.best)
+
+plt.figure(figsize = (5, 3))
+plt.plot(size, time, label = 'Leitura do primeiro elemento')
+plt.xlabel('Número de elementos da lista')
+plt.ylabel('Tempo demandado (s)')
+plt.legend(loc = 'upper left')
+
+# Digite seu código aqui!
+import matplotlib.pyplot as plt
+
+size = [] # Tamanho do problema
+time = [] # Tempo de execução
+
+for n in range(1, 500000, 500):
+  array = [0 for _ in range(n)]          # Array apenas com zeros
+  t = %timeit -o -r 1 -n 1 -q array[n-1] # Leitura do último elemento
+  size.append(n)
+  time.append(t.best)
+
+plt.figure(figsize = (5, 3))
+plt.plot(size, time, label = 'Leitura do último elemento')
+plt.xlabel('Número de elementos da lista')
+plt.ylabel('Tempo demandado (s)')
+plt.legend(loc = 'upper left')
+
+**negrito**### Busca
+
+# O código a seguir faz a operação de busca de um valor de uma lista com 10 elementos. 
+#Como a busca por um valor que não está na lista faz com que o método index gere uma 
+#exceção, usaremos novamente uma lista com zeros, mas mudaremos o valor do último 
+#elemento para um antes de realizar a busca. Também faremos o teste com %timeit.
+
+# Teste de busca pelo valor 1 em um lista com 10 elementos
+l = [0 for _ in range(10)]
+l[-1] = 1
+%timeit l.index(1)
+
+# Exercício: Use as células de código a seguir (e crie outras, se necessário) para 
+#repetir o teste para listas maiores, por exemplo, com 100 e com 1000 elementos. 
+#O que podemos concluir sobre o número de 'passos' necessários para fazer a busca
+#por um valor em uma lista em Python? Está coerente com o que foi visto na aula 
+#anterior? Qual a diferença dos resultados em relação ao exercício de leitura?
+
+# Digite seu código aqui!
+l = [0 for _ in range(100)]
+l[-1] = 1
+%timeit l.index(1)
+
+# Digite seu código aqui!
+l = [0 for _ in range(1000)]
+l[-1] = 1
+%timeit l.index(1)
+
+# O gráfico gerado pelo código o tempo da operação de busca pelo último elemento em 
+#listas de tamanhos variados.
+
+import matplotlib.pyplot as plt
+
+size = [] # Tamanho do problema
+time = [] # Tempo de execução
+
+for n in range(1, 100000, 100):
+  array = [0 for _ in range(n)]              # Array inicialmente apenas com zeros
+  array[-1] = 1                              # Mudança do último valor para um
+  t = %timeit -o -r 1 -n 1 -q array.index(1) # Busca pelo último elemento
+  size.append(n)
+  time.append(t.best)
+
+plt.figure(figsize = (5, 3))
+plt.plot(size, time, label = 'Busca pelo último elemento')
+plt.xlabel('Número de elementos da lista')
+plt.ylabel('Tempo demandado (s)')
+plt.legend(loc = 'upper left')
+
+# Exercício: Experimente gerar outros gráficos modificando o tamanho das listas, 
+#alterando o valor buscado e/ou a quantidade de iterações. Para isso, copie o código 
+#acima e cole-o nas células de programação seguintes (se necessário, crie outras). 
+#Em cada caso, reflita sobre os resultados obtidos: a tendência observada corresponde ao 
+#que foi estudado na aula teórica sobre eficiência da busca quanto ao tempo de execução?
+
+# Digite seu código aqui!
+import matplotlib.pyplot as plt
+
+size = [] # Tamanho do problema
+time = [] # Tempo de execução
+
+for n in range(1, 20000, 500):
+  array = [0 for _ in range(n)]              # Array inicialmente apenas com zeros
+  array[-1] = 1                              # Mudança do último valor para um
+  t = %timeit -o -r 1 -n 1 -q array.index(1) # Busca pelo último elemento
+  size.append(n)
+  time.append(t.best)
+
+plt.figure(figsize = (5, 3))
+plt.plot(size, time, label = 'Busca pelo último elemento')
+plt.xlabel('Número de elementos da lista')
+plt.ylabel('Tempo demandado (s)')
+plt.legend(loc = 'upper left')
+
+# Digite seu código aqui!
+import matplotlib.pyplot as plt
+
+size = [] # Tamanho do problema
+time = [] # Tempo de execução
+
+for n in range(1, 100000, 1000):
+  array = [0 for _ in range(n)]              # Array inicialmente apenas com zeros
+  array[-1] = 1                              # Mudança do último valor para um
+  t = %timeit -o -r 1 -n 1 -q array.index(1) # Busca pelo último elemento
+  size.append(n)
+  time.append(t.best)
+
+plt.figure(figsize = (5, 3))
+plt.plot(size, time, label = 'Busca pelo último elemento')
+plt.xlabel('Número de elementos da lista')
+plt.ylabel('Tempo demandado (s)')
+plt.legend(loc = 'upper left')
+
+### Inserção
+
+# O código a seguir faz a operação de inserção de um valor no índice zero de uma lista 
+#com 1000 elementos. Usamos uma lista apenas com números zero para este exemplo. 
+#Neste caso não é possível fazer o teste usando `%timeit` da mesma maneira que fazíamos 
+#nos casos anteriores pois as inserções seriam sempre feitas na mesma lista, que cresceria 
+#a centenas de milhares de elementos. Por conta disso, usaremos um laço de repetição. A cada 
+#repetição do laço, a estrutura `TimeitResult` é obtida com `%timeit` para apenas uma 
+#execução usando as opções `-r 1 -n 1`, e o valor é atribuído a uma variável com auxílio 
+#da opção `-o`. Em seguida o valor `best` (que é igual ao `worst` neste caso) é adicionado 
+#a uma lista. Ao final obtém-se a média dos valores na lista. A opção `-q` oculta o resultado 
+#de cada execução de `%timeit`.
+
+# Teste de inserção do valor 1 no índice zero em um lista com 1000 elementos executado 
+#1000 vezes
+time = []
+for i in range(1000):
+    l = [0 for _ in range(1000)]
+    t = %timeit -o -r 1 -n 1 -q l.insert(0, 1)
+    time.append(t.best)
+print(sum(time) / len(time), 's')
+
+# Exercício: Use as células de código a seguir (e crie outras, se necessário) para 
+#repetir o teste para listas maiores, por exemplo, com 10000 e com 100000 elementos. 
+#O que podemos concluir sobre o número de 'passos' necessários para fazer a inserção de 
+#um valor no índice zero de uma lista em Python? Está coerente com o que foi visto na 
+#aula anterior? Note a sugestão do uso de listas maiores para que o comportamento seja melhor 
+#observado. Este é um dos motivos pelo qual fazemos a análise em termos de 'passos' e não de 
+#tempo de relógio.
+
+# Digite seu código aqui!
+time = []
+for i in range(1000):
+    l = [0 for _ in range(10000)]
+    t = %timeit -o -r 1 -n 1 -q l.insert(0, 1)
+    time.append(t.best)
+print(sum(time) / len(time), 's')
+
+# Digite seu código aqui!
+time = []
+for i in range(1000):
+    l = [0 for _ in range(100000)]
+    t = %timeit -o -r 1 -n 1 -q l.insert(0, 1)
+    time.append(t.best)
+print(sum(time) / len(time), 's')
+
+# O gráfico gerado pelo código a seguir mostra o tempo de computação da operação de 
+#inserção no índice zero de listas com tamanhos variados.
+
+import matplotlib.pyplot as plt
+
+size = [] # Tamanho do problema
+time = [] # Tempo de execução
+
+for n in range(1, 100000, 100):
+  array = [0 for _ in range(n)]                  # Array inicialmente apenas com zeros
+  t = %timeit -o -r 1 -n 1 -q array.insert(0, 1) # Inserção no índice zero do array
+  time.append(t.best)
+  size.append(n)
+
+plt.figure(figsize = (5, 3))
+plt.plot(size, time, label = 'Inserção no início')
+plt.xlabel('Número de elementos da lista')
+plt.ylabel('Tempo demandado (s)')
+plt.legend(loc = 'upper left')
+
+# Exercício: Experimente gerar outros gráficos modificando o tamanho das listas, 
+#alterando o índice de inserção e/ou a quantidade de iterações. Para isso, copie o 
+#código acima e cole-o nas células de programação seguintes (se necessário, crie outras). 
+#Em cada caso, reflita sobre os resultados obtidos: a tendência observada corresponde 
+#ao que foi estudado na aula teórica sobre eficiência da inserção quanto ao tempo de 
+#execução?
+
+# Digite seu código aqui!
+import matplotlib.pyplot as plt
+
+size = [] # Tamanho do problema
+time = [] # Tempo de execução
+
+for n in range(1, 100000, 100):
+  array = [0 for _ in range(n)]                    # Array inicialmente apenas com zeros
+  t = %timeit -o -r 1 -n 1 -q array.insert(n-1, 1) # Inserção no final do array
+  time.append(t.best)
+  size.append(n)
+
+plt.figure(figsize = (5, 3))
+plt.plot(size, time, label = 'Inserção no final')
+plt.xlabel('Número de elementos da lista')
+plt.ylabel('Tempo demandado (s)')
+plt.legend(loc = 'upper left')
+
+### Remoção
+
+# O código a seguir faz a operação de remoção do elemento no índice zero de uma lista com 
+#10000 elementos. Usamos uma lista apenas com números zero para este exemplo. 
+#Semelhante ao que ocorre no caso da inserção, usaremos laços de repetição. Caso contrário 
+#as remoções seriam sempre feitas na mesma lista que rapidamente ficaria vazia.
+
+# Teste de remoção do elemento no índice zero em um lista com 10000 elementos
+time = []
+for i in range(1000):
+    l = [0 for _ in range(10000)]
+    t = %timeit -o -r 1 -n 1 -q l.pop(0)
+    time.append(t.best)
+print(sum(time) / len(time), 's')
+
+# Exercício: Use as células de código a seguir (e crie outras, se necessário) para repetir 
+#o teste para listas maiores, por exemplo, com 100000 e com 1000000 elementos. 
+#O que podemos concluir sobre o número de 'passos' necessários para fazer a remoção do 
+#valor no índice zero de uma lista em Python? Está coerente com o que foi visto na aula 
+#anterior? Neste caso, note também o uso de listas ainda maiores para que possamos observar 
+#melhor o comportamento.
+
+# Digite seu código aqui!
+time = []
+for i in range(1000):
+    l = [0 for _ in range(100000)]
+    t = %timeit -o -r 1 -n 1 -q l.pop(0)
+    time.append(t.best)
+print(sum(time) / len(time), 's')
+
+# Digite seu código aqui!
+time = []
+for i in range(1000):
+    l = [0 for _ in range(1000000)]
+    t = %timeit -o -r 1 -n 1 -q l.pop(0)
+    time.append(t.best)
+print(sum(time) / len(time), 's')
+
+# O gráfico gerado pelo código a seguir mostra o tempo de computação da operação de 
+#remoção do valor no índice zero de listas com tamanhos variados.
+
+import matplotlib.pyplot as plt
+
+size = [] # Tamanho do problema
+time = [] # Tempo de execução
+
+for n in range(1, 100000, 100):
+  array = [0 for _ in range(n)]            # Array inicialmente apenas com zeros
+  t = %timeit -o -r 1 -n 1 -q array.pop(0) # Remoção do valor no índice zero do array
+  time.append(t.best)
+  size.append(n)
+
+plt.figure(figsize = (5, 3))
+plt.plot(size, time, label = 'Remoção no início')
+plt.xlabel('Número de elementos da lista')
+plt.ylabel('Tempo demandado (s)')
+plt.legend(loc = 'upper left')
+
+# Exercício: Experimente gerar outros gráficos modificando o tamanho das listas, 
+#alterando o índice de remoção e/ou a quantidade de iterações. Para isso, copie o código 
+#acima e cole-o nas células de programação seguintes (se necessário, crie outras). Em cada 
+#caso, reflita sobre os resultados obtidos: a tendência observada corresponde ao que foi 
+#estudado na aula teórica sobre eficiência da remoção quanto ao tempo de execução?
+
+# Digite seu código aqui!
+import matplotlib.pyplot as plt
+
+size = [] # Tamanho do problema
+time = [] # Tempo de execução
+
+for n in range(1, 100000, 100):
+  array = [0 for _ in range(n)]              # Array inicialmente apenas com zeros
+  t = %timeit -o -r 1 -n 1 -q array.pop(n-1) # Remoção do valor no final do array
+  time.append(t.best)
+  size.append(n)
+
+plt.figure(figsize = (5, 3))
+plt.plot(size, time, label = 'Remoção no final')
+plt.xlabel('Número de elementos da lista')
+plt.ylabel('Tempo demandado (s)')
+plt.legend(loc = 'upper left')
+
+## Conjuntos (`set`)
+
+# Uma conjunto em Python é uma coleção não ordenada (não indexada) de zero ou mais 
+#objetos Python imutáveis. Não são sequências. Além disso, elas são heterogêneas, 
+#porém não permitem itens duplicados. Um conjunto é definido por chaves e seus elementos 
+#são separados por vírgula:
+
+set()             # Conjunto vazio
+{1, 3, 'S', 6.5}  # Conjunto com quatro elementos de tipos diferentes, todos imutáveis
+{}                # ATENÇÃO: dicionário vazio!
+
+# Operações típicas conhecidas do uso de conjuntos matemáticos também estão disponíveis 
+#em Python. Para dois conjuntos quaisquer chamados set1 e set2, temos:
+
+# Pertencimento: x.in(set1) pergunta se o valor x pertence ao conjunto
+# Cardinalidade: len(set) devolve a cardinalidade do conjunto
+# União: set1 | set2 cria um novo conjunto com todos os elementos de ambos
+# Interseção: set1 & set2 cria um novo conjunto com os elementos comuns a ambos
+# Diferença: set1 - set2 cria um novo conjunto com os elementos do primeiro que não estão 
+#no segundo
+# Subconjunto: set1 <= set2 pergunta se todos os elementos do primeiro conjunto estão 
+#no segundo
+# Para algumas dessas operações há métodos específicos da clase set:
+
+# União: set1.union(set2) cria um novo conjunto com todos os elementos de ambos
+# Interseção: set1.intersection(set2) cria um novo conjunto com todos os elementos comuns 
+#a ambos
+# Diferença: set1.difference(set2) cria um novo conjunto com todos os elementos do 
+#primeiro conjunto que não estão no segundo
+# Subconjunto: set1.issubset(set2) pergunta se um conjunto é subconjunto do outro
+# Por fim, temos algumas operações básicas para adicionar e remover elementos de um conjunto:
+
+# Inserção: set.add(item) adiciona item ao conjunto
+# Remoção: set.remove(item) remove item do conjunto
+# Remoção: set.pop() remove um elemento arbitrário do conjunto
+# Remoção: set.clear() remove todos os elementos do conjunto
+# De forma semelhante à lista, conjuntos também podem ser criados de forma compacta 
+#por abrangência de conjuntos (set comprehension):
+
+numbers = [1, 2, 3, 4, 5, 6]
+{n*n for n in numbers}
+
+# Diferente do que fizemos com listas, testaremos apenas uma operação com conjuntos, 
+#a operação de inserção. O motivo para isso é resposta de um dos exercícios a seguir. 
+#Como no caso das listas, vamos avaliar o desempenho da operação inserção sobre conjuntos 
+#em tempo de relógio, ao invés de passos propriamente ditos. Também faremos os testes em 
+#conjuntos de vários tamanhos. Como visto na revisão, a operação em Python que corresponde 
+#à inserção de um valor `v` em um conjunto chamado `myset` é:
+
+# - Inserção: `myset.add(v)` (`v` pode ser qualquer valor)
+
+# Note que não há um índice, então não temos como determinar o local da inserção. 
+#Com base na aula anterior, a princípio, gostaríamos de fazer a inserção no início para 
+#obter o pior caso.
+
+### Inserção
+
+# O código a seguir faz a operação de inserção de um valor num conjunto com 10 elementos. 
+#Como o conjunto não admite valores repitidos, geramos dez número diferentes. Semelhante 
+#ao que ocorre no caso da inserção e remoção em *arrays*, usaremos laços de repetição, 
+#caso contrário as inserções seriam sempre feitas no mesmo conjunto que após a primeira 
+#inserção já teria aquele elemento. Inserimos o valor -1 que certamente não aparece na 
+#abrangência de conjuntos usada para gerar o conjunto.
+
+# Teste de inserção do valor -1 em um conjunto com 10 elementos
+time = []
+for i in range(1000):
+    s = {i for i in range(10)}
+    t = %timeit -o -r 1 -n 1 -q s.add(-1)
+    time.append(t.best)
+print(sum(time) / len(time), 's')
+
+# Exercício: Use as células de código a seguir (e crie outras, se necessário) para repetir 
+#o teste para conjuntos maiores, por exemplo, com 100 e com 1000 elementos. O que podemos 
+#concluir sobre o número de 'passos' necessários para fazer a inserção do valor em um 
+#conjunto em Python? Está coerente com o que foi visto na aula anterior?
+
+# Digite seu código aqui!
+time = []
+for i in range(1000):
+    s = {i for i in range(100)}
+    t = %timeit -o -r 1 -n 1 -q s.add(-1)
+    time.append(t.best)
+print(sum(time) / len(time), 's')
+
+# Digite seu código aqui!
+time = []
+for i in range(1000):
+    s = {i for i in range(1000)}
+    t = %timeit -o -r 1 -n 1 -q s.add(-1)
+    time.append(t.best)
+print(sum(time) / len(time), 's')
+
+# Assim como fizemos para a avaliar o tempo de execução em listas, também geraremos um 
+# gráfico para operação de inserção em conjuntos. O gráfico gerado por meio do código abaixo 
+# mostrao tempo de computação para a inserção de um novo valor no conjunto.
+
+import matplotlib.pyplot as plt
+
+size = [] # Tamanho do problema
+time = [] # Tempo de execução
+
+for n in range(1, 100000, 100):
+  conjunto = {i for i in range(n)}             # Conjunto com números de 0 a 10
+  t = %timeit -o -r 1 -n 1 -q conjunto.add(-1)  # Inserção de um novo valor no conjunto
+  time.append(t.best)
+  size.append(n)
+
+plt.figure(figsize = (5, 3))
+plt.plot(size, time, label = 'Inserção de um novo valor')
+plt.xlabel('Número de elementos do conjunto')
+plt.ylabel('Tempo demandado (s)')
+plt.legend(loc = 'upper left')
+
+# Exercício: Experimente gerar outros gráficos modificando o tamanho dos conjuntos, 
+#alterando o elemento a ser inserido e/ou a quantidade de iterações. Para isso, copie o 
+#código acima e cole-o nas células de programação seguintes (se necessário, crie outras). 
+#Em cada caso, reflita sobre os resultados obtidos: a tendência observada corresponde ao que 
+#foi estudado na aula teórica sobre eficiência da inserção nos conjuntos quanto ao tempo de 
+#execução? Há diferença entre a inserção em listas e em conjuntos? Se sim, qual?
+
+# Digite seu código aqui!
+import matplotlib.pyplot as plt
+
+size = [] # Tamanho do problema
+time = [] # Tempo de execução
+
+for n in range(1, 100000, 100):
+  conjunto = {i for i in range(50)}             # Conjunto com números de 0 a 50
+  t = %timeit -o -r 1 -n 1 -q conjunto.add(-5)  # Inserção de um novo valor no conjunto
+  time.append(t.best)
+  size.append(n)
+
+plt.figure(figsize = (5, 3))
+plt.plot(size, time, label = 'Inserção de um novo valor')
+plt.xlabel('Número de elementos do conjunto')
+plt.ylabel('Tempo demandado (s)')
+plt.legend(loc = 'upper left')
+
+# Digite seu código aqui!
+import matplotlib.pyplot as plt
+
+size = [] # Tamanho do problema
+time = [] # Tempo de execução
+
+for n in range(1, 150000, 500):
+  conjunto = {i for i in range(n)}             # Conjunto com números de 0 a n
+  t = %timeit -o -r 1 -n 1 -q 50000000 in conjunto # Inserção de um novo valor no conjunto
+  time.append(t.best)
+  size.append(n)
+
+plt.figure(figsize = (5, 3))
+plt.plot(size, time, label = 'Inserção de um novo valor')
+plt.xlabel('Número de elementos do conjunto')
+plt.ylabel('Tempo demandado (s)')
+plt.legend(loc = 'upper left')
+
+s = {1,5,3,8,2}
+print(s)
+s.remove(5)
+print(s)
